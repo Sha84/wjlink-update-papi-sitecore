@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+	<global-property doc:name="Global Property" doc:id="6943ebae-c4b7-46f6-ab57-691a88bb6fa6" name="env" value="dev" />
+	<configuration-properties doc:name="Configuration properties" doc:id="3952b8ee-6748-4b89-b476-dcc047305a56" file="properties/${env}.yaml" />
+	<http:request-config name="Asset_Url_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="67cfa5b4-c870-489e-864d-fb5a07a17a9b" />
+	<http:request-config name="SiteCore_Update_HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d11a447a-38c7-4c15-b9a6-e7f994c2ed9d" basePath="${sitecoreconfig.basePath}">
+		<http:request-connection host="${sitecoreconfig.host}" />
+	</http:request-config>
+	<http:listener-config name="update-url-papi-httpListenerConfig" doc:name="HTTP Listener config" doc:id="0c981e82-436b-4a9a-9144-d701a12d9b31" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="75167338-e02c-4fa6-977a-1431684abce3" name="update-url-papi-config" api="resource::694704ae-436b-41ec-be10-7e4873bd5821:update-url-papi:1.0.0:raml:zip:update-url-papi.raml"/>
+</mule>

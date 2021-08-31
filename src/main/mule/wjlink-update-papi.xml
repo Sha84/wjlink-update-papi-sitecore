@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="wj-url-update-papiFlow" doc:id="b3c6734b-ed36-49cd-8913-7fe2261448f8" >
+		<ee:transform doc:name="Url Payload" doc:id="e86bdda0-7075-47cc-bc05-90e25fa570d7" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="vmPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Asset Url Link" doc:id="900f5d7e-72db-4a65-98e5-ee427b6e9df0" config-ref="Asset_Url_HTTP_Request_configuration" url="${Arequest.url}" responseTimeout="300000" />
+		<ee:transform doc:name="Asseturl Response" doc:id="943b48c8-5afd-47f7-9561-d7ee1e3f2204" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="reqresponsePayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Update Payload" doc:id="0c61d163-fffe-496a-987a-bde72ed4e849" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload update {
+    case s at .properties.OriginalAssetURL -> vars.vmPayload.object_keys.OriginalAssetUrl
+     case s at .properties.ThumbnailURL -> vars.vmPayload.object_keys.ThumbnailURL
+      case s at .properties.Thumbnail1URL -> vars.vmPayload.object_keys.Thumbnail1URL
+      case s at .properties.BigThumbnailURL -> vars.vmPayload.object_keys.BigThumbnail1URL
+       case s at .properties.PreviewURL -> vars.vmPayload.object_keys.PreviewURL
+        case s at .properties.Desktop1URL -> vars.vmPayload.object_keys.Desktop1URL
+         case s at .properties.Desktop2URL -> vars.vmPayload.object_keys.Desktop2URL
+          case s at .properties.Mobile1URL -> vars.vmPayload.object_keys.Mobile1URL
+           case s at .properties.Mobile2URL -> vars.vmPayload.object_keys.Mobile2URL
+            case s at .properties.PSDHighResURL -> vars.vmPayload.object_keys.PSDHighResURL
+            case s at .properties.PSDLowResURL -> vars.vmPayload.object_keys.PSDLowResURL
+            }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Payload to Sitecore" doc:id="0a4c63be-11a0-4ff0-a28d-7a9eaa11281f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="esPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="PUT" doc:name="Sitecore Update" doc:id="a3a5c8e4-7fd6-4f9d-aa2e-f0781463e3f9" config-ref="SiteCore_Update_HTTP_Request_configuration" path="${sitecoreconfig.path}" responseTimeout="300000" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-auth-token" : "DCH",
+	"X-Correlation-Id" : "DCH",
+	"content-type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Response Message" doc:id="83f37319-cd1f-4aaf-833b-43e3fb805ed1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.esPayload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="6fc7c46e-3b36-4906-9c03-54b89c1dacdb" type="HTTP:BAD_REQUEST" >
+				<ee:transform doc:name="Copy_of_Error Description" doc:id="d5506425-3943-4548-a6e2-886eb92deafe" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

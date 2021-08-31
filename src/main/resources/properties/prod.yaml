@@ -1,0 +1,33 @@
+#Listener configurations
+"http":
+   "host": "0.0.0.0"
+   "port": "8096"
+   "basepath": "/api/*"
+   "config": "update-url-papi-2-httpListenerConfig"
+   "timeout": "30000"
+#Api details
+"application":
+  "name":  "link-update-papi"
+  "version"     : "1"
+  "instanceName": "wjlink-update-papi"
+  "environment": "dev"
+  "status": "running"
+#Asset url link http request config
+"Arequest":
+    "url": "http://sitecore-integration.us-e2.cloudhub.io/entities/575365"
+    "config": "Asset_Url_HTTP_Request_configuration"
+#Sitecore update http request config  
+"sitecoreconfig":
+   
+   "host": "sitecore-sapi.us-e2.cloudhub.io"
+   "port": "8094"
+   "basePath": "/api/"
+   "path": "assets/linkUpdate"
+   "protocol": "HTTP"
+   "timeout": "300000"
+   "config": "SiteCore_Update_HTTP_Request_configuration"
+
+
+         
+              
+                            
